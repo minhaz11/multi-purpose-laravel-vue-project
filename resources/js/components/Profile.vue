@@ -75,15 +75,15 @@
                   <div class="tab-pane active" id="settings">
                     <form class="form-horizontal">
                       <div class="form-group row">
-                        <label for="inputName" class="col-sm-2 col-form-label">Name</label>
+                        <label for="inputName" class="col-sm-2 col-form-label" >Name</label>
                         <div class="col-sm-10">
-                          <input v-model="form.name" type="email" class="form-control" id="inputName" placeholder="Name">
+                          <input v-model="form.name" type="email" class="form-control" id="inputName" placeholder="Name" name="name">
                         </div>
                       </div>
                       <div class="form-group row">
                         <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
                         <div class="col-sm-10">
-                          <input v-model="form.email" type="email" class="form-control" id="inputEmail" placeholder="Email">
+                          <input v-model="form.email" type="email" class="form-control" id="inputEmail" placeholder="Email" name="email">
                         </div>
                       </div>
                       <div class="form-group row">
@@ -95,13 +95,13 @@
                       <div class="form-group row">
                         <label for="inputExperience" class="col-sm-2 col-form-label">Biography</label>
                         <div class="col-sm-10">
-                          <textarea v-model="form.bio" class="form-control" id="inputExperience" placeholder="Experience"></textarea>
+                          <textarea v-model="form.bio" class="form-control" id="inputExperience" placeholder="Experience" name="bio"></textarea>
                         </div>
                       </div>
                       <div class="form-group row">
                         <label for="inputSkills" class="col-sm-2 col-form-label">Photo</label>
                         <div class="col-sm-10">
-                          <input type="file" class="form-control-file" id="inputSkills" placeholder="Skills">
+                          <input @change="uploadFile" type="file" class="form-control-file" id="inputSkills" name="photo">
                         </div>
                       </div>
                       <div class="form-group row">
@@ -115,7 +115,7 @@
                       </div>
                       <div class="form-group row">
                         <div class="offset-sm-2 col-sm-10">
-                          <button type="submit" class="btn btn-danger">Submit</button>
+                          <button type="submit" class="btn btn-success" @click.prevent="updateInfo">Update</button>
                         </div>
                       </div>
                     </form>
@@ -144,6 +144,22 @@
                     bio:'',
                     photo:''
                 }),
+            }
+        },
+        methods:{
+            updateInfo(){
+                this.form.put('api/profile').then(()=>{
+
+                })
+            },
+            uploadFile(e){
+                //converting base64 of image
+                let file = e.target.files[0]
+                let reader = new FileReader();
+                reader.onloadend =(file)=>{
+                    this.form.photo = reader.result
+                }
+                reader.readAsDataURL(file)
             }
         },
         mounted() {

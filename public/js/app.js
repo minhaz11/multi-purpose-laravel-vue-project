@@ -1956,13 +1956,31 @@ __webpack_require__.r(__webpack_exports__);
       })
     };
   },
+  methods: {
+    updateInfo: function updateInfo() {
+      this.form.put('api/profile').then(function () {});
+    },
+    uploadFile: function uploadFile(e) {
+      var _this = this;
+
+      //converting base64 of image
+      var file = e.target.files[0];
+      var reader = new FileReader();
+
+      reader.onloadend = function (file) {
+        _this.form.photo = reader.result;
+      };
+
+      reader.readAsDataURL(file);
+    }
+  },
   mounted: function mounted() {
-    var _this = this;
+    var _this2 = this;
 
     axios.get('api/profile').then(function (_ref) {
       var data = _ref.data;
 
-      _this.form.fill(data);
+      _this2.form.fill(data);
     });
   }
 });
@@ -64759,7 +64777,8 @@ var render = function() {
                           attrs: {
                             type: "email",
                             id: "inputName",
-                            placeholder: "Name"
+                            placeholder: "Name",
+                            name: "name"
                           },
                           domProps: { value: _vm.form.name },
                           on: {
@@ -64798,7 +64817,8 @@ var render = function() {
                           attrs: {
                             type: "email",
                             id: "inputEmail",
-                            placeholder: "Email"
+                            placeholder: "Email",
+                            name: "email"
                           },
                           domProps: { value: _vm.form.email },
                           on: {
@@ -64838,7 +64858,8 @@ var render = function() {
                           staticClass: "form-control",
                           attrs: {
                             id: "inputExperience",
-                            placeholder: "Experience"
+                            placeholder: "Experience",
+                            name: "bio"
                           },
                           domProps: { value: _vm.form.bio },
                           on: {
@@ -64853,11 +64874,49 @@ var render = function() {
                       ])
                     ]),
                     _vm._v(" "),
+                    _c("div", { staticClass: "form-group row" }, [
+                      _c(
+                        "label",
+                        {
+                          staticClass: "col-sm-2 col-form-label",
+                          attrs: { for: "inputSkills" }
+                        },
+                        [_vm._v("Photo")]
+                      ),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-sm-10" }, [
+                        _c("input", {
+                          staticClass: "form-control-file",
+                          attrs: {
+                            type: "file",
+                            id: "inputSkills",
+                            name: "photo"
+                          },
+                          on: { change: _vm.uploadFile }
+                        })
+                      ])
+                    ]),
+                    _vm._v(" "),
                     _vm._m(3),
                     _vm._v(" "),
-                    _vm._m(4),
-                    _vm._v(" "),
-                    _vm._m(5)
+                    _c("div", { staticClass: "form-group row" }, [
+                      _c("div", { staticClass: "offset-sm-2 col-sm-10" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-success",
+                            attrs: { type: "submit" },
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                return _vm.updateInfo($event)
+                              }
+                            }
+                          },
+                          [_vm._v("Update")]
+                        )
+                      ])
+                    ])
                   ])
                 ]
               )
@@ -65000,28 +65059,6 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "form-group row" }, [
-      _c(
-        "label",
-        {
-          staticClass: "col-sm-2 col-form-label",
-          attrs: { for: "inputSkills" }
-        },
-        [_vm._v("Photo")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-10" }, [
-        _c("input", {
-          staticClass: "form-control-file",
-          attrs: { type: "file", id: "inputSkills", placeholder: "Skills" }
-        })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group row" }, [
       _c("div", { staticClass: "offset-sm-2 col-sm-10" }, [
         _c("div", { staticClass: "checkbox" }, [
           _c("label", [
@@ -65030,20 +65067,6 @@ var staticRenderFns = [
             _c("a", { attrs: { href: "#" } }, [_vm._v("terms and conditions")])
           ])
         ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group row" }, [
-      _c("div", { staticClass: "offset-sm-2 col-sm-10" }, [
-        _c(
-          "button",
-          { staticClass: "btn btn-danger", attrs: { type: "submit" } },
-          [_vm._v("Submit")]
-        )
       ])
     ])
   }
