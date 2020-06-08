@@ -148,18 +148,29 @@
         },
         methods:{
             updateInfo(){
+                this.$Progress.start()
                 this.form.put('api/profile').then(()=>{
-
+                     this.$Progress.finish()
+                }).catch(()=>{
+                    this.$Progress.fail()
                 })
             },
             uploadFile(e){
                 //converting base64 of image
                 let file = e.target.files[0]
                 let reader = new FileReader();
-                reader.onloadend =(file)=>{
+               if(file['size']<=2111775){
+                    reader.onloadend =(file)=>{
                     this.form.photo = reader.result
                 }
-                reader.readAsDataURL(file)
+                  reader.readAsDataURL(file)
+               } else{
+                   Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'File size is more than 2 megabytes',
+                        })
+               }
             }
         },
         mounted() {

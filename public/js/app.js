@@ -1958,29 +1958,44 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     updateInfo: function updateInfo() {
-      this.form.put('api/profile').then(function () {});
+      var _this = this;
+
+      this.$Progress.start();
+      this.form.put('api/profile').then(function () {
+        _this.$Progress.finish();
+      })["catch"](function () {
+        _this.$Progress.fail();
+      });
     },
     uploadFile: function uploadFile(e) {
-      var _this = this;
+      var _this2 = this;
 
       //converting base64 of image
       var file = e.target.files[0];
       var reader = new FileReader();
 
-      reader.onloadend = function (file) {
-        _this.form.photo = reader.result;
-      };
+      if (file['size'] <= 2111775) {
+        reader.onloadend = function (file) {
+          _this2.form.photo = reader.result;
+        };
 
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'File size is more than 2 megabytes'
+        });
+      }
     }
   },
   mounted: function mounted() {
-    var _this2 = this;
+    var _this3 = this;
 
     axios.get('api/profile').then(function (_ref) {
       var data = _ref.data;
 
-      _this2.form.fill(data);
+      _this3.form.fill(data);
     });
   }
 });

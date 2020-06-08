@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+use Image;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -94,7 +94,12 @@ class UserController extends Controller
     public function updateInfo(Request $request)
     {
       $user = auth('api')->user();
-      return $request->photo;
+      if( $request->photo){
+
+        $fileName = time(). '.'.explode('/', explode(':',substr($request->photo,0,strpos($request->photo,';')))[1])[1];
+
+        Image::make($request->photo)->save(public_path().'/uploads/profile/'.$fileName);
+      }
 
     }
 }
