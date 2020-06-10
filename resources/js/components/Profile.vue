@@ -5,6 +5,10 @@
         background: url('./img/photo1.png')
 
     }
+    .widget-user-image img{
+        height: 170px;
+        width: 170px;
+    }
 </style>
 <template>
     <div class="container">
@@ -19,7 +23,7 @@
                 <h5 class="widget-user-desc text-right">Web Designer</h5>
               </div>
               <div class="widget-user-image">
-                <img class="img-circle" src="./img/user.jpg" alt="User Avatar">
+                <img class="img-circle" :src="userPhoto()" alt="User Avatar" >
               </div>
               <div class="card-footer">
                 <div class="row">
@@ -87,9 +91,9 @@
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="inputName2" class="col-sm-2 col-form-label">Experience</label>
+                        <label for="inputName2" class="col-sm-2 col-form-label">Password</label>
                         <div class="col-sm-10">
-                          <input type="text" class="form-control" id="inputName2" placeholder="Experience">
+                          <input type="password" v-model="form.password" class="form-control" id="inputName2" placeholder="Change password" name="password">
                         </div>
                       </div>
                       <div class="form-group row">
@@ -147,10 +151,18 @@
             }
         },
         methods:{
+            userPhoto(){
+                return "uploads/profile/"+this.form.photo
+            },
             updateInfo(){
                 this.$Progress.start()
                 this.form.put('api/profile').then(()=>{
+                     Fire.$emit('refresh')
                      this.$Progress.finish()
+                     Toast.fire({
+                    icon: 'success',
+                    title: 'Updated successfully'
+                    })
                 }).catch(()=>{
                     this.$Progress.fail()
                 })
@@ -174,8 +186,16 @@
             }
         },
         mounted() {
-           axios.get('api/profile').then(({data})=>{
+         axios.get('api/profile').then(({data})=>{
                this.form.fill(data)
+           })
+
+        },
+        created(){
+             Fire.$on('refresh', ()=>{
+                axios.get('api/profile').then(({data})=>{
+                this.form.fill(data)
+           })
            })
         }
     }

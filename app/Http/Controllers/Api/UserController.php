@@ -5,6 +5,8 @@ use Image;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+// use Symfony\Component\HttpFoundation\Request;
+
 
 class UserController extends Controller
 {
@@ -18,7 +20,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::latest()->paginate(10);
+        return User::latest()->paginate(5);
     }
 
     /**
@@ -83,6 +85,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('isAdmin');
         $delete = User::findOrFail($id);
         $delete->delete();
         return ['message'=>'User deleted'];
@@ -94,12 +97,45 @@ class UserController extends Controller
     public function updateInfo(Request $request)
     {
       $user = auth('api')->user();
-      if( $request->photo){
+      $this->validate($request,[
+        'name'=>'required|max:191|string',
+        'email'=>'required|email|string|unique:users,email,'.$user->id,
+        'password'=>'sometimes|min:6'
+    ]);
+
+    if( $request->photo != $user->photo){
 
         $fileName = time(). '.'.explode('/', explode(':',substr($request->photo,0,strpos($request->photo,';')))[1])[1];
 
+        $oldPhoto = public_path().'/uploads/profile/'.$user->photo;
+
+        if(file_exists($oldPhoto)){
+            unlink($oldPhoto);
+        }
         Image::make($request->photo)->save(public_path().'/uploads/profile/'.$fileName);
+        $request->merge(['photo'=> $fileName]);
       }
+      if(!empty($request->password)){
+        $request->merge(['password'=> bcrypt($request['password'])]);
+      }
+      $user->update($request->all());
+      return ['message'=>'profile hasbeen updated'];
+
+    }
+    public function search()
+    {
+
+         if($search = \Request::get('q')){
+            $user = User::where(function($query) use ($search){
+                $query->where('name','LIKE',"%$search%")->orWhere('email','LIKE',"%$search%");
+            })->paginate(10);
+         } else{
+             $user = User::latest()->paginate(10);
+         }
+         return $user;
+
+
 
     }
 }
+

@@ -1,9 +1,9 @@
 
 import Vue from 'vue'
 import moment from 'moment'
-
 import Swal from 'sweetalert2'
-window.Swal = Swal
+import Gate from './Gate'
+Vue.prototype.$gate = new Gate(window.user)
 
 const Toast = Swal.mixin({
     toast: true,
@@ -16,7 +16,7 @@ const Toast = Swal.mixin({
       toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
   })
-  window.Toast = Toast
+window.Toast = Toast
 import { Form, HasError, AlertError } from 'vform'
 import VueProgressBar from 'vue-progressbar'
 window.Form = Form
@@ -42,6 +42,7 @@ let routes = [
     {path:'/dashboard', component:require('./components/Dashboard.vue').default},
     {path:'/developer', component:require('./components/Developer.vue').default},
     {path:'/profile', component:require('./components/Profile.vue').default},
+    {path:'*', component:require('./components/notFound.vue').default},
     {path:'/user', component:Users}
 ]
 
@@ -80,6 +81,11 @@ Vue.component(
     'passport-personal-access-tokens',
     require('./components/passport/PersonalAccessTokens.vue').default
 );
+Vue.component(
+    'not-found',
+    require('./components/notFound.vue').default
+);
+Vue.component('pagination', require('laravel-vue-pagination'));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -89,5 +95,15 @@ Vue.component(
 
 const app = new Vue({
     el: '#app',
-    router
+    router,
+    data:{
+        search:null
+    },
+    methods:{
+        searchit:_.debounce(()=>{
+
+            Fire.$emit('searching')
+        },1000)
+
+    }
 });
